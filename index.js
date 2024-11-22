@@ -3,6 +3,8 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs')
 
 const program = new Command();
 program
@@ -22,8 +24,11 @@ if (!host || !port || !cache) {
     process.exit(1);
 }
 
+const file = fs.readFileSync('./swagger.yaml', 'utf8')
+const swaggerDocument = YAML.parse(file)
 const app = express();
 app.use(express.json());
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 const upload = multer();
 
 const cacheDir = path.resolve(options.cache);
